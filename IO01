@@ -1,0 +1,204 @@
+package IOStudent;
+
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.*;
+
+public class Student implements Comparable<Student>
+{
+    private static int id;   //学号
+    private static String name;   //姓名
+    private static int Grade;   //成绩
+    public Student() {
+
+    }
+    public Student(int id, String name,int Grade) {
+        this.id = id;
+        this.name = name;
+        this.Grade = Grade;
+    }
+
+    public static int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public static String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public static int getGrade() {
+        return Grade;
+    }
+    public void setGrade(int Grade) {
+        this.Grade = Grade;
+    }
+
+    
+    public String toString() {   //重写一下toString方法进行打印输出方法
+        return "学生学号=" + id + ", 姓名=" + name + ", 成绩=" + Grade ;
+    }
+
+    
+    public int compareTo(Student other) {   //重写一下compareTo方法根据成绩进行排序
+        return this.Grade - other.getGrade();
+    }
+
+
+    static final String STUDENT_STORE_DIR = "D:\\eclipse IDE JAVA\\work space\\IOStudent\\src\\IOStudent\\StudentIOTest";
+    static List<Student> list = new LinkedList<Student>();
+    static Scanner sc = new Scanner(System.in);
+    
+	public static void addStudent() {
+		   
+        System.out.print("请输入你要添加几个学生信息：");
+        int num = sc.nextInt();
+        System.out.println("----------------------------------");
+        for (int w = 0; w < num; w++) {
+            System.out.println("请添加学生信息");
+            System.out.println("----------------------------------");
+            System.out.print("请输入学生学号:");
+            int id = FileStudentUtil.getIntKeyBoard();
+            System.out.print("请输入学生姓名：");
+            String name = FileStudentUtil.getStringKeyBoard();
+            System.out.print("请输入学生成绩：");
+            int Grade = FileStudentUtil.getIntKeyBoard();
+            list.add(new Student(id, name, Grade));
+            System.out.println("添加成功。");
+            System.out.println("---------------------------------");
+        File file = new File(STUDENT_STORE_DIR,Student.getName());
+        FileOutputStream fos = null;
+        ObjectOutputStream ors = null;
+        try {
+			fos = new FileOutputStream(file);
+			ors = new ObjectOutputStream(fos);
+			ors.writeObject(Student.getName());
+			ors.writeObject(Student.getId());
+			ors.writeObject(Student.getGrade());
+			
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			if(ors != null)
+				try {
+					ors.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			if(fos != null)
+				try {
+					fos.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+        
+        
+        }
+    }
+public static void showStudent() {
+	
+	File dir = new File(STUDENT_STORE_DIR);
+	File[] file = dir.listFiles();
+	for(File f:file)
+	{
+		Student stu = getStudent(f.getName());
+		System.out.println(stu);
+	}
+	
+	
+	
+} 
+public static Student getStudent(String name) {
+	// TODO Auto-generated method stub
+	
+		File file = new File(STUDENT_STORE_DIR,name);
+		FileInputStream fis = null;
+		ObjectInputStream ois = null;
+		try {
+			fis = new FileInputStream(file);
+			ois = new ObjectInputStream(fis);
+			Student student= (Student) ois.readObject();
+			return student;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}finally{
+			if(ois != null){
+				try {
+					ois.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if(fis != null){
+				try {
+					fis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+public static void findStudent() {
+System.out.println("请输入学生学号");
+int num = FileStudentUtil.getIntKeyBoard();
+File dir = new File(STUDENT_STORE_DIR);
+File[] file = dir .listFiles();
+for(File f:file) {
+	 Student stu1 = getStudent(f.getName());
+	 if(Student.getId() != num)
+		 System.out.println("该学生不存在");
+	 if(stu1.getId() == num)
+		 System.out.println("该学生:"+stu1.getName());
+}
+}
+
+
+public static void delStudent() {
+System.out.println("请输入学生学号");
+int num1 = FileStudentUtil.getIntKeyBoard();
+Student stu2 = findStudent01(num1);
+File file2 =  new File (STUDENT_STORE_DIR,stu2.getName());
+System.out.println(file2.getPath());
+	
+	System.out.println((file2.delete())?"删除学生"+stu2.getName()+"成功":"删除失败");
+
+}
+public static Student findStudent01(int n) {
+File dir01 = new File(STUDENT_STORE_DIR);
+File[] file01 = dir01.listFiles();
+for(File f:file01) {
+	 Student stu01 = getStudent(f.getName());
+	 if(stu01.getId() != n)
+		 return null;
+	 if(stu01.getId() == n)
+		 return stu01;
+	 
+	 }
+return null;
+
+// TODO Auto-generated method stub
+
+
+}
+}
